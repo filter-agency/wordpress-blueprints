@@ -1,0 +1,96 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "landingPage": "/wp-admin/admin.php?page=filter_ai",
+    "extraLibraries": ["wp-cli"],
+    "steps": [
+        {
+            "step": "setSiteOptions",
+            "options": {
+                "blogname": "Filter AI Demo",
+                "blogdescription": "Powerful AI content creation tools integrated directly into the WordPress editor for effortless content generation."
+            }
+        },
+        {
+            "step": "installPlugin",
+            "pluginZipFile": {
+                "resource": "url",
+                "url": "https://github-proxy.com/proxy/?repo=woocommerce/woocommerce&release=latest&asset=woocommerce.zip"
+            }
+        },
+        {
+            "step": "writeFile",
+            "path": "/wordpress/wp-content/mu-plugins/rewrite.php",
+            "data": "<?php /* Use pretty permalinks */ add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );"
+        },
+        {
+            "step": "setSiteOptions",
+            "options": {
+                "blogname": "WooCommerce",
+                "woocommerce_store_city": "London",
+                "woocommerce_store_address": "124 City Road",
+                "woocommerce_store_postcode": "EC1V 2NX",
+                "woocommerce_default_country": "United Kingdom",
+                "woocommerce_onboarding_profile": {
+                    "skipped": true
+                },
+                "woocommerce_currency": "GBP",
+                "woocommerce_weight_unit": "kg",
+                "woocommerce_dimension_unit": "cm",
+                "woocommerce_allow_tracking": "no",
+                "woocommerce_cheque_settings": {
+                    "enabled": "yes"
+                }
+            }
+        },
+        {
+            "step": "importWxr",
+            "file": {
+                "resource": "url",
+                "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/refs/heads/trunk/plugins/woocommerce/sample-data/sample_products.xml"
+            }
+        },
+        {
+            "step": "installPlugin",
+            "pluginZipFile": {
+                "resource": "wordpress.org/plugins",
+                "slug": "wordpress-seo"
+            },
+            "options": {
+                "activate": true
+            }
+        },
+        {
+            "step": "installPlugin",
+            "pluginZipFile": {
+                "resource": "url",
+                "url": "https://github-proxy.com/proxy/?repo=filter-agency/filter-ai&release=latest&asset=filter-ai.zip"
+            },
+            "options": {
+                "activate": true
+            }
+        },
+        {
+            "step": "installPlugin",
+            "pluginZipFile": {
+                "resource": "url",
+                "url": "https://github.com/Yoast/wp-cli-faker/archive/refs/heads/main.zip"
+            },
+            "options": {
+                "activate": true
+            }
+        },
+        {
+            "step": "runWpCli",
+            "command": "faker core content --authors=5 --posts=15 --pages=5 --categories=8 --tags=12"
+        },
+        {
+            "step": "runWpCli",
+            "command": "faker woocommerce products --products=25 --categories=6 --min-reviews=2 --max-reviews=5"
+        },
+        {
+            "step": "login",
+            "username": "admin",
+            "password": "password"
+        }
+    ]
+}
